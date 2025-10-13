@@ -1,0 +1,23 @@
+*.sqlite*
+# Laravel dentro de src/
+src/vendor/
+src/node_modules/
+src/storage/*.key
+src/storage/logs/
+src/storage/framework/cache/
+src/storage/framework/sessions/
+src/storage/framework/views/
+src/public/storage
+src/.env
+src/.env.local
+src/.env.testing
+# Composer/npm lock si quieres (opcional):
+# src/composer.lock
+# src/package-lock.json
+
+# Mac/Win
+.DS_Store
+Thumbs.db
+
+# Docker basura local
+*.env.local

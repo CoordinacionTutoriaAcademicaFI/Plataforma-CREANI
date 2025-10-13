@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: precalculo_app_prod
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8081
+      APP_KEY: REEMPLAZA_ESTA_CLAVE
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: precalculo
+      DB_USERNAME: precalculo
+      DB_PASSWORD: precalculo
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    # Persistencia para uploads (storage)
+    volumes:
+      - storage-prod:/var/www/html/storage
+
+  db:
+    image: postgres:14
+    container_name: precalculo_db_prod
+    environment:
+      POSTGRES_DB: precalculo
+      POSTGRES_USER: precalculo
+      POSTGRES_PASSWORD: precalculo
+    volumes:
+      - db-data-prod:/var/lib/postgresql/data
+
+volumes:
+  db-data-prod:
+  storage-prod:

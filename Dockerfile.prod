@@ -1,0 +1,39 @@
+# ====== Stage 1: build de assets ======
+FROM node:20 AS assets
+WORKDIR /app
+COPY src/package*.json src/vite.config.js src/tailwind.config.js src/postcss.config.js ./
+RUN npm ci
+COPY src/resources ./resources
+RUN npm run build   # genera /app/public/build
+
+# ====== Stage 2: PHP + Apache ======
+FROM php:8.2-apache
+RUN apt-get update && apt-get install -y git unzip libpq-dev libicu-dev libzip-dev \
+ && docker-php-ext-install pdo pdo_pgsql intl bcmath zip opcache \
+ && a2enmod rewrite headers
+
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/000-default.conf \
+    /etc/apache2/apache2.conf
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
+
+# Instala deps PHP (cache-friendly)
+COPY src/composer.json src/composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copia el código
+COPY src/ ./
+
+# Copia el build estático de Vite/Tailwind
+COPY --from=assets /app/public/build ./public/build
+
+# php.ini básico
+RUN { \
+  echo 'upload_max_filesize=64M'; \
+  echo 'post_max_size=64M'; \
+  echo 'memory_limit=512M'; \
+  echo 'max_execution_time=120'; \
+} > /usr/local/etc/php/conf.d/custom.ini

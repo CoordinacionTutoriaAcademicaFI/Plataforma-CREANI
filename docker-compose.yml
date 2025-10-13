@@ -1,0 +1,61 @@
+services:
+  app:
+    build: .
+    container_name: precalculo_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+    depends_on:
+      - db
+      - mailpit   # 👈 añade esto
+
+  node:
+    image: node:20
+    container_name: precalculo_node
+    working_dir: /app
+    volumes:
+      - ./src:/app
+      - node_modules_node:/app/node_modules
+    command: sh -lc "tail -f /dev/null"
+    ports:
+      - "5173:5173"
+
+  db:
+    image: postgres:14
+    container_name: precalculo_db
+    environment:
+      POSTGRES_DB: precalculo
+      POSTGRES_USER: precalculo
+      POSTGRES_PASSWORD: precalculo
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: precalculo_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  # 👇 Nuevo servicio: Mailpit (SMTP de desarrollo + bandeja web)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: precalculo_mailpit
+    ports:
+      - "8025:8025"   # UI web (bandeja)
+      - "1025:1025"   # Puerto SMTP
+
+volumes:
+  db-data:
+  vendor:
+  node_modules:
+  node_modules_node:

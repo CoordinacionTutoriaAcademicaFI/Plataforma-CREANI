@@ -1,0 +1,22 @@
+# VCS / editor
+.git
+.gitignore
+.vscode
+README.md
+
+# Composer/Node pesados (ya se instalan dentro de la imagen)
+src/vendor
+src/node_modules
+
+# Enlace simbólico de Laravel (rompe en Windows)
+src/public/storage
+# Si tienes uploads locales, no los metas en la imagen
+src/storage/*
+!src/storage/.gitignore
+!src/storage/app/.gitignore
+!src/storage/framework/.gitignore
+!src/storage/logs/.gitignore
+
+# Archivos locales que no deben ir al build
+src/.env
+src/tests
