@@ -78,7 +78,7 @@ docker compose up -d --build
 # Backend
 docker compose exec -w /var/www/html app composer install
 docker compose exec -w /var/www/html app php artisan key:generate
-docker compose exec -w /var/www/html app php artisan migrate
+docker compose exec -w /var/www/html app php artisan migrate:fresh --seed #borra todas las tablas las reinicia y ejecuta la migracion 
 docker compose exec -w /var/www/html app php artisan storage:link
 
 # Front (opcional para dev)
