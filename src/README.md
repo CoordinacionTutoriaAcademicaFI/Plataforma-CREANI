@@ -81,6 +81,12 @@ docker compose exec -w /var/www/html app php artisan key:generate
 docker compose exec -w /var/www/html app php artisan migrate:fresh --seed #borra todas las tablas las reinicia y ejecuta la migracion 
 docker compose exec -w /var/www/html app php artisan storage:link
 
-# Front (opcional para dev)
+### Crear usuario administrador
+
+Después de ejecutar las migraciones, crear el usuario administrador con:
+
+docker compose exec -w /var/www/html app php artisan db:seed --class=AdminUserSeeder
+
+# Front debera ejecutarse esto y dejar corriendo en una terminal
 docker compose exec node npm ci
 docker compose exec node npm run dev -- --host
