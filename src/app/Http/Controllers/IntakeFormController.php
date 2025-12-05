@@ -10,6 +10,10 @@ class IntakeFormController extends Controller
 {
     public function create(Request $request)
     {
+
+        if (($request->user() && $request->user()->rol === 'admin') || session('admin_logged_in')) {
+        return redirect()->route('admin.dashboard');
+    }
         $user = $request->user();
 
         $form = IntakeForm::firstOrNew(
@@ -50,6 +54,9 @@ class IntakeFormController extends Controller
 
     public function store(IntakeFormRequest $request)
     {
+        if (($request->user() && $request->user()->rol === 'admin') || session('admin_logged_in')) {
+        return redirect()->route('admin.dashboard');
+    }
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
 
